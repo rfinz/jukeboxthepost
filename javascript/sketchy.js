@@ -106,10 +106,10 @@ function add2Q(data){
 function isValid(obj){
     if((Object.prototype.toString.call(obj) === '[object Array]' &&
 	typeof obj != "undefined" &&
-	obj != null &&
+	obj !== null &&
 	obj.length > 0) ||
        ((Object.prototype.toString.call(obj) !== '[object Array]' &&
-	obj != null))
+	obj !== null))
       ){
 	return true;
     } else {
