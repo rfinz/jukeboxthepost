@@ -1,6 +1,6 @@
 var imgQ = [];
 var bloglist = [];
-var tumblrApiUrl = 'https://api.tumblr.com/v2/blog/'
+var tumblrApiUrl = 'https://api.tumblr.com/v2/blog/';
 var tumblrApiKey = '0jzY067qvcobXBg8JSRLK6YkOjMOUPqgPIW6siNQBrueMlIIGb';
 var blogInput, addBlogButton;
 
@@ -27,7 +27,7 @@ function windowResized(){
 function addBlog(){
     background(0, 200, 100);
     blogInput.position(60, 18);
-    blogInput.show()
+    blogInput.show();
     blogInput.elt.focus();
     blogInput.elt.onkeypress = function(e){
 	if(e.which == 13){
@@ -83,8 +83,9 @@ function blogcheck(data){
 function bloginfo(data){
     if (isValid(data.response)){
 	blog = $.grep(bloglist, function(e){ return e.blog === data.response.blog.name })[0];
-	blog["posts"] = data.response.blog.posts;
-	blog["url"] = data.response.blog.url;
+	blog.posts = data.response.blog.posts;
+	blog.url = data.response.blog.url;
+	background(0, 100, 200);
 	blogInput.value("");
     }
 }
