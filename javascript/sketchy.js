@@ -3,21 +3,41 @@ var bloglist = [];
 var tumblrApiUrl = 'https://api.tumblr.com/v2/blog/';
 var tumblrApiKey = '0jzY067qvcobXBg8JSRLK6YkOjMOUPqgPIW6siNQBrueMlIIGb';
 var blogInput, addBlogButton;
+var draw_sec = 0;
+var load_sec = 0;
+var old_img;
+
+
 
 function setup(){
     createCanvas(windowWidth, windowHeight);
-    background(0, 100, 200);
 
     addBlogButton = createButton('+');
+    $(addBlogButton.elt).css('z-index', 999);
     addBlogButton.position(20, 20);
     addBlogButton.mousePressed(addBlog);
 
     blogInput = createInput();
-
+    $(blogInput.elt).css('z-index', 999);
 }
 
 function draw(){
-    add2Q(null);
+    var sec = second();
+
+    if(sec % 4 === 0 && sec !== load_sec && imgQ.length < 3 && bloglist.length > 0){
+	load_sec = sec;
+	add2Q(null);
+    }
+
+    if(sec % 8 === 0 && sec !== draw_sec && imgQ.length > 0){
+	draw_sec = sec;
+	if(typeof old_img != "undefined"){
+	    old_img.remove();
+	}
+	i = imgQ.pop().img;
+	old_img = i;
+	i.position(0,0).show();
+    }
 }
 
 function windowResized(){
@@ -25,7 +45,6 @@ function windowResized(){
 }
 
 function addBlog(){
-    background(0, 200, 100);
     blogInput.position(60, 18);
     blogInput.show();
     blogInput.elt.focus();
@@ -91,14 +110,30 @@ function bloginfo(data){
 }
 
 function add2Q(data){
-    if(data !== null){
-
-
-
+    if(data !== null && isValid(data.response) && data.response.posts.length > 0){
+	imgs = data.response.posts[0].photos;
+	imgs.forEach(function(img){
+	    i = createImg(img.alt_sizes[0].url).hide();
+	    imgQ.push({ img: i,
+			height: img.alt_sizes[0].height,
+			width: img.alt_sizes[0].width
+		      });
+	    });
     } else {
-
-
-
+	randBlog = floor(random(0, bloglist.length));
+	randPost = floor(random(0, bloglist[randBlog].posts));
+	$.ajax({
+	    url: tumblrApiUrl+bloglist[randBlog].blog+'.tumblr.com/posts',
+	    type: 'GET',
+	    dataType: 'jsonp',
+	    data:{
+		api_key: tumblrApiKey,
+		limit: 1,
+		offset: randPost,
+		type: 'photo',
+		jsonp: 'add2Q'
+	    }
+	});
 
     }
 }
