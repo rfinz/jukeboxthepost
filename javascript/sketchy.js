@@ -2,7 +2,7 @@ var imgQ = [];
 var bloglist = [];
 var tumblrApiUrl = 'https://api.tumblr.com/v2/blog/';
 var tumblrApiKey = '0jzY067qvcobXBg8JSRLK6YkOjMOUPqgPIW6siNQBrueMlIIGb';
-var blogInput, addBlogButton;
+var blogInput, addBlogButton, fullscreenButton;
 var draw_sec = 0;
 var load_sec = 0;
 var old_img;
@@ -11,11 +11,17 @@ var old_img;
 
 function setup(){
     createCanvas(windowWidth, windowHeight);
+    background("#36465D");
 
     addBlogButton = createButton('+');
     $(addBlogButton.elt).css('z-index', 999);
     addBlogButton.position(20, 20);
     addBlogButton.mousePressed(addBlog);
+
+    fullscreenButton = createButton('<>');
+    $(fullscreenButton.elt).css('z-index', 999);
+    fullscreenButton.position(windowWidth-80, 20);
+    fullscreenButton.mousePressed(makeFullscreen);
 
     blogInput = createInput();
     $(blogInput.elt).css('z-index', 999);
@@ -32,16 +38,22 @@ function draw(){
     if(sec % 8 === 0 && sec !== draw_sec && imgQ.length > 0){
 	draw_sec = sec;
 	if(typeof old_img != "undefined"){
-	    old_img.remove();
+	    target = old_img;
+	    $(target.elt).fadeOut(300, function(){target.remove();});
 	}
-	i = imgQ.pop().img;
+
+	img = imgQ.pop();
+	background(img.background);
+	i = img.img;
 	old_img = i;
-	i.position(0,0).show();
+	i.position((windowWidth - $(i.elt).width())/2,0);
+	$(i.elt).fadeIn(300, function(){i.show()});
     }
 }
 
 function windowResized(){
     resizeCanvas(windowWidth, windowHeight);
+    background("#36465D");
 }
 
 function addBlog(){
@@ -104,7 +116,6 @@ function bloginfo(data){
 	blog = $.grep(bloglist, function(e){ return e.blog === data.response.blog.name })[0];
 	blog.posts = data.response.blog.posts;
 	blog.url = data.response.blog.url;
-	background(0, 100, 200);
 	blogInput.value("");
     }
 }
@@ -113,11 +124,13 @@ function add2Q(data){
     if(data !== null && isValid(data.response) && data.response.posts.length > 0){
 	imgs = data.response.posts[0].photos;
 	imgs.forEach(function(img){
-	    i = createImg(img.alt_sizes[0].url).hide();
-	    imgQ.push({ img: i,
-			height: img.alt_sizes[0].height,
-			width: img.alt_sizes[0].width
-		      });
+	    i_obj = {
+		height: img.alt_sizes[0].height,
+		width: img.alt_sizes[0].width,
+		background: "#36465D"
+	    };
+	    i_obj.img = createImg(img.alt_sizes[0].url, img.alt_sizes[0].url).hide();
+	    imgQ.push(i_obj);
 	    });
     } else {
 	randBlog = floor(random(0, bloglist.length));
@@ -151,3 +164,30 @@ function isValid(obj){
 	return false;
     }
 }
+
+function makeFullscreen(){
+    if (document.documentElement.requestFullscreen) {
+	document.documentElement.requestFullscreen();
+    } else if (document.documentElement.webkitRequestFullscreen) {
+	document.documentElement.webkitRequestFullscreen();
+    } else if (document.documentElement.mozRequestFullScreen) {
+	document.documentElement.mozRequestFullScreen();
+    } else if (document.documentElement.msRequestFullscreen) {
+	document.documentElement.msRequestFullscreen();
+    }
+}
+
+$(document).on(
+    'webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange',
+    function(){
+	var isFullScreen = document.mozFullScreen || document.webkitIsFullScreen;
+	if(isFullScreen){
+	    addBlogButton.hide();
+	    fullscreenButton.hide();
+	    noCursor();
+	} else {
+	    addBlogButton.show();
+	    fullscreenButton.show();
+	    cursor();
+	}
+    });
