@@ -2,23 +2,16 @@ var imgQ = [];
 var bloglist = [];
 var tumblrApiUrl = 'https://api.tumblr.com/v2/blog/';
 var tumblrApiKey = '0jzY067qvcobXBg8JSRLK6YkOjMOUPqgPIW6siNQBrueMlIIGb';
-var blogInput, addBlogButton, fullscreenButton;
 var draw_sec = 0;
 var load_sec = 0;
 var old_img;
-
+var blogInput, addBlogButton, fullscreenButton, gifCheckbox;
 
 
 function setup(){
     createCanvas(windowWidth, windowHeight);
     background("#36465D");
-    fill(0, 200, 200);
-    textSize(20);
-    textAlign(LEFT, TOP);
-    textFont("Courier");
-    text("Enter the handle of any of your favorite tumblogs e.g. thedailycruft, babycrumbs... enter as many as you want, just one at a time please.", 20, 60, 200, 700);
-
-    text("^ F u l l s c r e e e n", windowWidth-50, 60, 20, 700);
+    labelControls();
 
     addBlogButton = createButton('+');
     $(addBlogButton.elt).css('z-index', 999);
@@ -29,6 +22,10 @@ function setup(){
     $(fullscreenButton.elt).css('z-index', 999);
     fullscreenButton.position(windowWidth-60, 20);
     fullscreenButton.mousePressed(makeFullscreen);
+
+    gifCheckbox = createCheckbox();
+    $(gifCheckbox.elt).css('z-index', 999);
+    gifCheckbox.position(20, windowHeight-40);
 
     blogInput = createInput();
     $(blogInput.elt).css('z-index', 999);
@@ -171,6 +168,17 @@ function isValid(obj){
     } else {
 	return false;
     }
+}
+
+function labelControls(){
+    fill(0, 200, 200);
+    textSize(20);
+    textAlign(LEFT, TOP);
+    textFont("Courier");
+    text("Enter the handle of any of your favorite tumblogs e.g. thedailycruft, babycrumbs... enter as many as you want, just one at a time please.", 20, 60, 200, 700);
+    text("^ F u l l s c r e e e n", windowWidth-50, 60, 20, 700);
+    text("< check box to only display gifs", 60, windowHeight-40, 800, 30);
+
 }
 
 function makeFullscreen(){
