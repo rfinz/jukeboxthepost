@@ -12,6 +12,13 @@ var old_img;
 function setup(){
     createCanvas(windowWidth, windowHeight);
     background("#36465D");
+    fill(0, 200, 200);
+    textSize(20);
+    textAlign(LEFT, TOP);
+    textFont("Courier");
+    text("Enter the handle of any of your favorite tumblogs e.g. thedailycruft, babycrumbs... enter as many as you want, just one at a time please.", 20, 60, 200, 700);
+
+    text("^ F u l l s c r e e e n", windowWidth-50, 60, 20, 700);
 
     addBlogButton = createButton('+');
     $(addBlogButton.elt).css('z-index', 999);
@@ -20,7 +27,7 @@ function setup(){
 
     fullscreenButton = createButton('<>');
     $(fullscreenButton.elt).css('z-index', 999);
-    fullscreenButton.position(windowWidth-80, 20);
+    fullscreenButton.position(windowWidth-60, 20);
     fullscreenButton.mousePressed(makeFullscreen);
 
     blogInput = createInput();
@@ -106,6 +113,7 @@ function blogcheck(data){
 	fill(255, 0, 0);
 	blogInput.hide();
 	textAlign(LEFT, TOP);
+	textSize(14);
 	textFont("Courier");
 	text("Not a real tumblog :(", 60, 24);
     }
