@@ -50,14 +50,24 @@ function draw(){
 	background(img.background);
 	i = img.img;
 	old_img = i;
-	i.position((windowWidth - $(i.elt).width())/2,0);
-	$(i.elt).fadeIn(300, function(){i.show()});
+	i.position((windowWidth - $(i.elt).width())/2, 0);
+	$(i.elt).fadeIn(300, function(){i.show();});
     }
 }
 
 function windowResized(){
+    var isFullScreen = document.mozFullScreen || document.webkitIsFullScreen;
+
     resizeCanvas(windowWidth, windowHeight);
+    addBlogButton.position(20, 20);
+    fullscreenButton.position(windowWidth-60, 20);
+    gifCheckbox.position(20, windowHeight-40);
+
     background("#36465D");
+    if(bloglist.length === 0 && !isFullScreen){
+	labelControls();
+    }
+
 }
 
 function addBlog(){
@@ -101,7 +111,7 @@ function getBlogInfo(blog){
 
 function blogcheck(data){
     if(isValid(data.response)){
-	if($.grep(bloglist, function(e){ return e.blog === blogInput.value()}).length < 1){
+	if($.grep(bloglist, function(e){ return e.blog === blogInput.value(); }).length < 1){
 	    bloglist.push({blog: blogInput.value()});
 	}
 	blogInput.hide();
@@ -118,7 +128,7 @@ function blogcheck(data){
 
 function bloginfo(data){
     if (isValid(data.response)){
-	blog = $.grep(bloglist, function(e){ return e.blog === data.response.blog.name })[0];
+	blog = $.grep(bloglist, function(e){ return e.blog === data.response.blog.name; })[0];
 	blog.posts = data.response.blog.posts;
 	blog.url = data.response.blog.url;
 	blogInput.value("");
@@ -134,9 +144,14 @@ function add2Q(data){
 		width: img.alt_sizes[0].width,
 		background: "#36465D"
 	    };
-	    i_obj.img = createImg(img.alt_sizes[0].url, img.alt_sizes[0].url).hide();
-	    imgQ.push(i_obj);
-	    });
+	    if(!gifCheckbox.checked()){
+		i_obj.img = createImg(img.alt_sizes[0].url, img.alt_sizes[0].url).hide();
+		imgQ.push(i_obj);
+	    } else if(img.alt_sizes[0].url.split('.').pop() === 'gif'){
+		i_obj.img = createImg(img.alt_sizes[0].url, img.alt_sizes[0].url).hide();
+		imgQ.push(i_obj);
+	    }
+	});
     } else {
 	randBlog = floor(random(0, bloglist.length));
 	randPost = floor(random(0, bloglist[randBlog].posts));
@@ -200,10 +215,12 @@ $(document).on(
 	if(isFullScreen){
 	    addBlogButton.hide();
 	    fullscreenButton.hide();
+	    gifCheckbox.hide();
 	    noCursor();
 	} else {
 	    addBlogButton.show();
 	    fullscreenButton.show();
+	    gifCheckbox.show();
 	    cursor();
 	}
     });
