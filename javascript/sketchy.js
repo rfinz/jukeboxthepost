@@ -7,6 +7,46 @@ var load_sec = 0;
 var old_img;
 var blogInput, addBlogButton, fullscreenButton, gifCheckbox;
 
+p5.prototype.loadImageFromElement = function(img, successCallback, failureCallback) {
+  var pImg = new p5.Image(1, 1, this);
+  var decrementPreload = p5._getDecrementPreload.apply(this, arguments);
+
+  img.onload = function() {
+    pImg.width = pImg.canvas.width = img.width;
+    pImg.height = pImg.canvas.height = img.height;
+
+    // Draw the image into the backing canvas of the p5.Image
+    pImg.drawingContext.drawImage(img, 0, 0);
+
+    if (typeof successCallback === 'function') {
+      successCallback(pImg);
+    }
+    if (decrementPreload && (successCallback !== decrementPreload)) {
+      decrementPreload();
+    }
+  };
+  img.onerror = function(e) {
+    p5._friendlyFileLoadError(0,img.src);
+    // don't get failure callback mixed up with decrementPreload
+    if ((typeof failureCallback === 'function') &&
+      (failureCallback !== decrementPreload)) {
+      failureCallback(e);
+    }
+  };
+
+  //set crossOrigin in case image is served which CORS headers
+  //this will let us draw to canvas without tainting it.
+  //see https://developer.mozilla.org/en-US/docs/HTML/CORS_Enabled_Image
+  // When using data-uris the file will be loaded locally
+  // so we don't need to worry about crossOrigin with base64 file types
+  if(path.indexOf('data:image/') !== 0) {
+    img.crossOrigin = 'Anonymous';
+  }
+
+  //start loading the image
+
+  return pImg;
+}
 
 function setup(){
     createCanvas(windowWidth, windowHeight);
