@@ -81,18 +81,23 @@ function draw(){
 
     if(sec % 8 === 0 && sec !== draw_sec && imgQ.length > 0){
 	draw_sec = sec;
-	if(typeof old_img != "undefined"){
-	    target = old_img;
-	    $(target.elt).fadeOut(300, function(){target.remove();});
-	}
-
-	img = imgQ.pop();
-	background(img.background);
-	i = img.img;
-	old_img = i;
-	i.position((windowWidth - $(i.elt).width())/2, 0);
-	$(i.elt).fadeIn(300, function(){i.show();});
+	transitionImg();
     }
+}
+
+function transitionImg(){
+    if(typeof old_img != "undefined"){
+	target = old_img;
+	$(target.elt).fadeOut(300, function(){target.remove();});
+    }
+
+    img = imgQ.pop();
+    background(img.background);
+    i = img.img;
+    old_img = i;
+    i.position((windowWidth - $(i.elt).width())/2, 0);
+
+    $(i.elt).fadeIn(300, function(){i.show();});
 }
 
 function windowResized(){
