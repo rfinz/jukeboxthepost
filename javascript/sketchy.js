@@ -1,7 +1,7 @@
 var imgQ = [];
 var bloglist = [];
 var tumblrApiUrl = 'https://api.tumblr.com/v2/blog/';
-var tumblrApiKey = '0jzY067qvcobXBg8JSRLK6YkOjMOUPqgPIW6siNQBrueMlIIGb';
+var tumblrApiKey = 'UR_KEY_HERE';
 var draw_sec = 0;
 var load_sec = 0;
 var old_img;
