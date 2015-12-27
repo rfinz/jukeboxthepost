@@ -2,16 +2,15 @@ var imgQ = [];
 var bloglist = [];
 var tumblrApiUrl = 'https://api.tumblr.com/v2/blog/';
 var tumblrApiKey = '0jzY067qvcobXBg8JSRLK6YkOjMOUPqgPIW6siNQBrueMlIIGb';
-var blogInput, addBlogButton, fullscreenButton;
 var draw_sec = 0;
 var load_sec = 0;
 var old_img;
-
-
+var blogInput, addBlogButton, fullscreenButton, gifCheckbox;
 
 function setup(){
     createCanvas(windowWidth, windowHeight);
     background("#36465D");
+    labelControls();
 
     addBlogButton = createButton('+');
     $(addBlogButton.elt).css('z-index', 999);
@@ -20,8 +19,12 @@ function setup(){
 
     fullscreenButton = createButton('<>');
     $(fullscreenButton.elt).css('z-index', 999);
-    fullscreenButton.position(windowWidth-80, 20);
+    fullscreenButton.position(windowWidth-60, 20);
     fullscreenButton.mousePressed(makeFullscreen);
+
+    gifCheckbox = createCheckbox();
+    $(gifCheckbox.elt).css('z-index', 999);
+    gifCheckbox.position(20, windowHeight-40);
 
     blogInput = createInput();
     $(blogInput.elt).css('z-index', 999);
@@ -37,23 +40,40 @@ function draw(){
 
     if(sec % 8 === 0 && sec !== draw_sec && imgQ.length > 0){
 	draw_sec = sec;
-	if(typeof old_img != "undefined"){
-	    target = old_img;
-	    $(target.elt).fadeOut(300, function(){target.remove();});
-	}
-
-	img = imgQ.pop();
-	background(img.background);
-	i = img.img;
-	old_img = i;
-	i.position((windowWidth - $(i.elt).width())/2,0);
-	$(i.elt).fadeIn(300, function(){i.show()});
+	transitionImg();
     }
 }
 
-function windowResized(){
-    resizeCanvas(windowWidth, windowHeight);
+function transitionImg(){
+    if(typeof old_img != "undefined"){
+	target = old_img;
+	$(target.elt).fadeOut(300, function(){target.remove();});
+    }
+
     background("#36465D");
+
+    img = imgQ.pop();
+    i = img.img;
+    old_img = i;
+    i.position((windowWidth - $(i.elt).width())/2, 0);
+    $(i.elt).fadeIn(300, function(){
+	i.show();
+    });
+}
+
+function windowResized(){
+    var isFullScreen = document.mozFullScreen || document.webkitIsFullScreen;
+
+    resizeCanvas(windowWidth, windowHeight);
+    addBlogButton.position(20, 20);
+    fullscreenButton.position(windowWidth-60, 20);
+    gifCheckbox.position(20, windowHeight-40);
+
+    background("#36465D");
+    if(bloglist.length === 0 && !isFullScreen){
+	labelControls();
+    }
+
 }
 
 function addBlog(){
@@ -97,7 +117,7 @@ function getBlogInfo(blog){
 
 function blogcheck(data){
     if(isValid(data.response)){
-	if($.grep(bloglist, function(e){ return e.blog === blogInput.value()}).length < 1){
+	if($.grep(bloglist, function(e){ return e.blog === blogInput.value(); }).length < 1){
 	    bloglist.push({blog: blogInput.value()});
 	}
 	blogInput.hide();
@@ -106,6 +126,7 @@ function blogcheck(data){
 	fill(255, 0, 0);
 	blogInput.hide();
 	textAlign(LEFT, TOP);
+	textSize(14);
 	textFont("Courier");
 	text("Not a real tumblog :(", 60, 24);
     }
@@ -113,7 +134,7 @@ function blogcheck(data){
 
 function bloginfo(data){
     if (isValid(data.response)){
-	blog = $.grep(bloglist, function(e){ return e.blog === data.response.blog.name })[0];
+	blog = $.grep(bloglist, function(e){ return e.blog === data.response.blog.name; })[0];
 	blog.posts = data.response.blog.posts;
 	blog.url = data.response.blog.url;
 	blogInput.value("");
@@ -129,9 +150,14 @@ function add2Q(data){
 		width: img.alt_sizes[0].width,
 		background: "#36465D"
 	    };
-	    i_obj.img = createImg(img.alt_sizes[0].url, img.alt_sizes[0].url).hide();
-	    imgQ.push(i_obj);
-	    });
+	    if(!gifCheckbox.checked()){
+		i_obj.img = createImg(img.alt_sizes[0].url, img.alt_sizes[0].url).hide();
+		imgQ.push(i_obj);
+	    } else if(img.alt_sizes[0].url.split('.').pop() === 'gif'){
+		i_obj.img = createImg(img.alt_sizes[0].url, img.alt_sizes[0].url).hide();
+		imgQ.push(i_obj);
+	    }
+	});
     } else {
 	randBlog = floor(random(0, bloglist.length));
 	randPost = floor(random(0, bloglist[randBlog].posts));
@@ -165,6 +191,17 @@ function isValid(obj){
     }
 }
 
+function labelControls(){
+    fill(0, 200, 200);
+    textSize(20);
+    textAlign(LEFT, TOP);
+    textFont("Courier");
+    text("Enter the handle of any of your favorite tumblogs e.g. thedailycruft, babycrumbs... enter as many as you want, just one at a time please.", 20, 60, 200, 700);
+    text("^ F u l l s c r e e e n", windowWidth-50, 60, 20, 700);
+    text("< check box to only display gifs", 60, windowHeight-40, 800, 30);
+
+}
+
 function makeFullscreen(){
     if (document.documentElement.requestFullscreen) {
 	document.documentElement.requestFullscreen();
@@ -184,10 +221,12 @@ $(document).on(
 	if(isFullScreen){
 	    addBlogButton.hide();
 	    fullscreenButton.hide();
+	    gifCheckbox.hide();
 	    noCursor();
 	} else {
 	    addBlogButton.show();
 	    fullscreenButton.show();
+	    gifCheckbox.show();
 	    cursor();
 	}
     });
