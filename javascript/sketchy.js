@@ -286,11 +286,17 @@ $(document).on(
 	    addBlogButton.hide();
 	    fullscreenButton.hide();
 	    gifCheckbox.hide();
+	    bloglist.forEach(function(e){
+		e.button.hide();
+	    });
 	    noCursor();
 	} else {
 	    addBlogButton.show();
 	    fullscreenButton.show();
 	    gifCheckbox.show();
+	    bloglist.forEach(function(e){
+		e.button.show();
+	    });
 	    cursor();
 	}
     });
