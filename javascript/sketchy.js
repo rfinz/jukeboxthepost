@@ -8,6 +8,7 @@ var looping = true;
 var old_img;
 var blogInput, addBlogButton, fullscreenButton, gifCheckbox;
 
+
 function setup(){
     createCanvas(windowWidth, windowHeight);
     background("#36465D");
@@ -36,7 +37,7 @@ function draw(){
     var isFullScreen = document.mozFullScreen || document.webkitIsFullScreen;
 
 
-    if(sec % 4 === 0 && sec !== load_sec && imgQ.length < 3 && bloglist.length > 0){
+    if(sec % 3 === 0 && sec !== load_sec && imgQ.length < 4 && bloglist.length > 0){
 	load_sec = sec;
 	add2Q(null);
     }
@@ -51,20 +52,25 @@ function draw(){
 }
 
 function transitionImg(){
-    if(typeof old_img != "undefined"){
-	target = old_img;
-	$(target.elt).fadeOut(300, function(){target.remove();});
-    }
-
-    background("#36465D");
-
     img = imgQ.pop();
-    i = img.img;
-    old_img = i;
-    i.position((windowWidth - $(i.elt).width())/2, 0);
-    $(i.elt).fadeIn(300, function(){
-	i.show();
-    });
+    if(img.img.elt.complete){
+	if(typeof old_img != "undefined"){
+	    target = old_img;
+	    $(target.elt).fadeOut(300, function(){target.remove();});
+	}
+
+	background("#36465D");
+
+	i = img.img;
+	old_img = i;
+	i.position((windowWidth - $(i.elt).width())/2, 0);
+	$(i.elt).fadeIn(300, function(){
+	    i.show();
+	});
+    } else {
+	console.log("IMAGE NOT FULLY LOADED");
+	imgQ.push(img);
+    }
 }
 
 function windowResized(){
@@ -194,13 +200,11 @@ function add2Q(data){
 	    i_obj = {
 		height: img.alt_sizes[0].height,
 		width: img.alt_sizes[0].width,
+		url: img.alt_sizes[0].url,
 		background: "#36465D"
 	    };
-	    if(!gifCheckbox.checked()){
-		i_obj.img = createImg(img.alt_sizes[0].url, img.alt_sizes[0].url).hide();
-		imgQ.push(i_obj);
-	    } else if(img.alt_sizes[0].url.split('.').pop() === 'gif'){
-		i_obj.img = createImg(img.alt_sizes[0].url, img.alt_sizes[0].url).hide();
+	    if(!gifCheckbox.checked() || img.alt_sizes[0].url.split('.').pop() === 'gif'){
+		i_obj.img = createImg(img.alt_sizes[0].url).hide();
 		imgQ.push(i_obj);
 	    }
 	});
