@@ -141,23 +141,12 @@ function removeBlog(e){
 function attemptBlog(){
     addBlogButton.elt.disabled = false;
     $.ajax({
-	url: tumblrApiUrl+blogInput.value()+'.tumblr.com/avatar',
-	type: 'GET',
-	dataType: 'jsonp',
-	data:{
-	    jsonp: "blogcheck"
-	}
-    });
-}
-
-function getBlogInfo(blog){
-    $.ajax({
-	url: tumblrApiUrl+blog+'.tumblr.com/info',
+	url: tumblrApiUrl+blogInput.value()+'.tumblr.com/info',
 	type: 'GET',
 	dataType: 'jsonp',
 	data:{
 	    api_key: tumblrApiKey,
-	    jsonp: "bloginfo"
+	    jsonp: "blogcheck"
 	}
     });
 }
@@ -171,7 +160,10 @@ function blogcheck(data){
 	    });
 	}
 	blogInput.hide();
-	getBlogInfo(blogInput.value());
+	blog = $.grep(bloglist, function(e){ return e.blog === data.response.blog.name; })[0];
+	blog.posts = data.response.blog.posts;
+	blog.url = data.response.blog.url;
+	blogInput.value("");
 	background("#36465D");
 	listBlogs();
     } else {
@@ -186,10 +178,7 @@ function blogcheck(data){
 
 function bloginfo(data){
     if (isValid(data.response)){
-	blog = $.grep(bloglist, function(e){ return e.blog === data.response.blog.name; })[0];
-	blog.posts = data.response.blog.posts;
-	blog.url = data.response.blog.url;
-	blogInput.value("");
+
     }
 }
 
