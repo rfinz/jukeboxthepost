@@ -185,6 +185,7 @@ function bloginfo(data){
 function add2Q(data){
     if(data !== null && isValid(data.response) && data.response.posts.length > 0){
 	imgs = data.response.posts[0].photos;
+	imgs.reverse();
 	imgs.forEach(function(img){
 	    i_obj = {
 		height: img.alt_sizes[0].height,
