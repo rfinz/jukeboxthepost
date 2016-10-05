@@ -8,10 +8,12 @@ var looping = true;
 var old_img;
 var blogInput, addBlogButton, fullscreenButton, gifCheckbox;
 
+var colorScheme = { background: "#1f1f1f" };
+/* tumblr color "#36465D" */
 
 function setup(){
     createCanvas(windowWidth, windowHeight);
-    background("#36465D");
+    background(colorScheme.background);
     labelControls();
 
     addBlogButton = createButton('+');
@@ -59,7 +61,7 @@ function transitionImg(){
 	    $(target.elt).fadeOut(300, function(){target.remove();});
 	}
 
-	background("#36465D");
+	background(colorScheme.background);
 
 	i = img.img;
 	old_img = i;
@@ -85,7 +87,7 @@ function windowResized(){
 	old_img.position((windowWidth - $(old_img.elt).width())/2, 0);
     }
 
-    background("#36465D");
+    background(colorScheme.background);
     if(bloglist.length === 0 && !isFullScreen){
 	labelControls();
     } else if(bloglist.length > 0 && !isFullScreen){
@@ -130,10 +132,10 @@ function removeBlog(e){
     }
     if(bloglist.length === 0){
 	imgQ = [];
-	background("#36465D");
+	background(colorScheme.background);
 	labelControls();
     } else {
-	background("#36465D");
+	background(colorScheme.background);
 	listBlogs();
     }
 }
@@ -164,7 +166,7 @@ function blogcheck(data){
 	blog.posts = data.response.blog.posts;
 	blog.url = data.response.blog.url;
 	blogInput.value("");
-	background("#36465D");
+	background(colorScheme.background);
 	listBlogs();
     } else {
 	fill(255, 0, 0);
@@ -191,7 +193,7 @@ function add2Q(data){
 		height: img.alt_sizes[0].height,
 		width: img.alt_sizes[0].width,
 		url: img.alt_sizes[0].url,
-		background: "#36465D"
+		background: colorScheme.background
 	    };
 	    if(!gifCheckbox.checked() || img.alt_sizes[0].url.split('.').pop() === 'gif'){
 		i_obj.img = createImg(img.alt_sizes[0].url).hide();
