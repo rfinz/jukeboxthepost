@@ -238,7 +238,7 @@ function labelControls(){
     textSize(20);
     textAlign(LEFT, TOP);
     textFont("Courier");
-    text("Enter the handle of any of your favorite tumblogs e.g. thedailycruft, babycrumbs... enter as many as you want, just one at a time please.", 20, 60, 200, 700);
+    text("Enter the handle of any of your favorite tumblogs e.g. thedailycruft, snatchforce... enter as many as you want, just one at a time please.", 20, 60, 200, 700);
     text("^ F u l l s c r e e e n", windowWidth-50, 60, 20, 700);
     text("< check box to only display gifs", 60, windowHeight-40, 800, 30);
 
